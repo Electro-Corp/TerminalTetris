@@ -14,7 +14,7 @@ void graphicsInit(){
         terminalWidth = winSize.ws_col;
     }
     // Calculate where the game should be
-    gameYOffset = (terminalHeight / 2) - (TETRIS_HEIGHT / 2);
+    gameYOffset = (terminalHeight / 2) - (TETRIS_HEIGHT);
     gameXOffset = (terminalWidth / 2) - ((strlen(TETRIS_BACKGROUND) * TETRIS_WIDTH) / 2);
 
     printf("Terminal Size: %d %d\nGame Pos: %d %d", terminalHeight, terminalWidth, gameXOffset, gameYOffset);
@@ -88,11 +88,11 @@ void graphicsFreeMenu(G_Menu* menu){
 void graphicsInitBackdrop(){
     printf("\033[2J\033[H");
     graphicsHelper_CursorAt(gameXOffset, gameYOffset);
-    for(int y = gameYOffset; y < gameYOffset + TETRIS_HEIGHT; y++){
+    for(int y = gameYOffset; y < gameYOffset + TETRIS_HEIGHT * 2; y++){
         for(int x = gameXOffset; x < gameXOffset + TETRIS_WIDTH; x++){
             printf(TETRIS_BACKGROUND);
         }
-        graphicsHelper_CursorAt(gameXOffset, y);
+        graphicsHelper_CursorAt(gameXOffset, y + (1 * y % 2));
     }
     fflush(stdout);
 }
