@@ -30,6 +30,9 @@ typedef struct {
     G_Option* options;
 } G_Menu;
 
+// Game
+
+
 // Open terminal size
 static int terminalWidth, terminalHeight;
 // Where the game should be
