@@ -19,14 +19,6 @@ void graphicsInit(){
 
     printf("Terminal Size: %d %d\nGame Pos: %d %d", terminalHeight, terminalWidth, gameXOffset, gameYOffset);
 
-    // Setup input 
-    // Hide Input
-    struct termios termInfo;
-    tcgetattr(0, &termInfo);
-    termInfo.c_lflag &= ~ICANON;
-    termInfo.c_cc[VMIN] = 1;
-    termInfo.c_cc[VTIME] = 0;
-    tcsetattr(0, TCSANOW, &termInfo);
     // Hide cursor
     printf("\033[?25l");
 }
@@ -50,6 +42,7 @@ void graphicsMenuLoop(G_Menu* menu){
             if(currentOption == i) printf("[%s]\n", menu->options[i].text);
             else printf("%s\n", menu->options[i].text);
         }
+    
 
         // Get input
         c = getchar();
@@ -86,13 +79,36 @@ void graphicsFreeMenu(G_Menu* menu){
 
 // Init backdrop
 void graphicsInitBackdrop(){
+    graphicsHelper_SetColor(0, 0, 0);
     printf("\033[2J\033[H");
     graphicsHelper_CursorAt(gameXOffset, gameYOffset);
     for(int y = gameYOffset; y < gameYOffset + TETRIS_HEIGHT * 2; y++){
+        graphicsHelper_SetColor(100, 100, 100);
         for(int x = gameXOffset; x < gameXOffset + TETRIS_WIDTH; x++){
-            printf(TETRIS_BACKGROUND);
+            if(y % 2 != 0)
+                printf(TETRIS_BACKGROUND);
+            else printf("   ");
         }
-        graphicsHelper_CursorAt(gameXOffset, y + (1 * y % 2));
+        graphicsHelper_SetColor(0, 0, 0);
+        graphicsHelper_CursorAt(gameXOffset, y);
+    }
+}
+
+// Draw frame
+void graphicsDrawFrame(G_Block currentBlock){
+    graphicsInitBackdrop();
+    // Draw the current block
+    graphicsHelper_SetColor(currentBlock.shape.color.r, currentBlock.shape.color.b, currentBlock.shape.color.g);
+    for(int i = 0; i < 4; i++){
+        int xPos = gameXOffset + (currentBlock.pos.x * 3) + (currentBlock.shape.spaces[i].x * 3);
+        int yPos = gameYOffset + currentBlock.pos.y - currentBlock.shape.spaces[i].y;
+        if((yPos % 2)){
+            // Make it thick
+            graphicsHelper_CursorAt(xPos, yPos);
+            printf("   ");
+        }
+        graphicsHelper_CursorAt(xPos, yPos);
+        printf("   ");
     }
     fflush(stdout);
 }
@@ -110,4 +126,9 @@ int graphicsHelper_GetPositionToCenterText(int len){
 // Move cursor to X, Y position
 void graphicsHelper_CursorAt(int x, int y){
     printf("\033[%d;%dH", y, x);
+}
+
+// Set terminal color
+void graphicsHelper_SetColor(int r, int g, int b){
+    printf("\033[48;2;%d;%d;%dm", r, g, b);
 }

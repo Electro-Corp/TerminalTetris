@@ -1,1 +1,1 @@
-gcc -o build/tetris src/main.c src/graphics.c -g
+gcc -o build/tetris src/main.c src/graphics.c src/block.c -g

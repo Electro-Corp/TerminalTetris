@@ -11,10 +11,12 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include "block.h"
+
 #define TETRIS_WIDTH 10
 #define TETRIS_HEIGHT 20
 
-#define TETRIS_BACKGROUND " * "
+#define TETRIS_BACKGROUND "   "
 
 // Two types of display modes, Menu and Game
 
@@ -59,7 +61,7 @@ void graphicsFreeMenu(G_Menu* menu);
 void graphicsInitBackdrop();
 
 // Draw frame
-void graphicsDrawFrame();
+void graphicsDrawFrame(G_Block currentBlock);
 
 // Helpers
 
@@ -68,5 +70,8 @@ int graphicsHelper_GetPositionToCenterText(int len);
 
 // Move cursor to X, Y position
 void graphicsHelper_CursorAt(int x, int y);
+
+// Set terminal color
+void graphicsHelper_SetColor(int r, int g, int b);
 
 #endif

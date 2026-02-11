@@ -3,9 +3,12 @@
     Main file for TerminalTetris
 */
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 // Non-std
 #include "graphics.h"
+#include "block.h"
 
 // Variables
 G_Menu mainMenu;
@@ -57,9 +60,28 @@ G_Menu createMainMenu(){
 void startGame(){
     // Free main menu
     //graphicsFreeMenu(&mainMenu);
+    // Setup input 
+    // Hide Input
+    struct termios termInfo;
+    tcgetattr(STDIN_FILENO, &termInfo);
+    termInfo.c_lflag &= ~ICANON;
+    termInfo.c_lflag &= ~ECHO;
+    termInfo.c_cc[VMIN] = 0;
+    termInfo.c_cc[VTIME] = 0;
+    tcsetattr(STDIN_FILENO, TCSANOW, &termInfo);
+    // Ready randomness
+    srand(time(NULL));
     // Init backdrop
     graphicsInitBackdrop();
-    while(1);
+
+    // Generate a block
+    G_Block block = blockCreateNewBlock();
+
+    while(1){
+        graphicsDrawFrame(block);
+        
+        block.pos.y++;
+    }
 }
 
 // Quit Game
