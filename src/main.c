@@ -5,23 +5,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/time.h>
 
 // Non-std
 #include "graphics.h"
 #include "block.h"
 
 // Variables
-G_Menu mainMenu;
+G_Menu mainMenu; // Main menu
+G_Menu pauseMenu; // Pause menu
+int fallTick = 1000; // ms for a block to fall 
 
+//
 // Main menu options
+//
 
-// Begin Tetris
-void startGame();
-// Quit Game
-void quit();
+void startGame(); // Begin Tetris
+void quit(); // Quit Game
 
-// Create main menu
-G_Menu createMainMenu();
+G_Menu createMainMenu(); // Create main menu
+void tetrisLoop(); // Main loop of tetris
+double getCurrentTimeMs(); // I wonder....
 
 int main(int args, char* argv){
     // Guess
@@ -73,18 +77,71 @@ void startGame(){
     srand(time(NULL));
     // Init backdrop
     graphicsInitBackdrop();
-
     // Generate a block
     G_Block block = blockCreateNewBlock();
 
+    // Loop variables
+    double lastMs = 0.0;
+    int updateScreen = 0;
+
+    // Draw first frame
+    graphicsDrawFrame(block);
+    // Main Tetris loop
     while(1){
-        graphicsDrawFrame(block);
-        
-        block.pos.y++;
+        updateScreen = 0;
+        // Check if block should fall
+        if(getCurrentTimeMs() - lastMs > fallTick){
+            block.pos.y++;
+            lastMs = getCurrentTimeMs();
+            updateScreen = 1; // Yes, update screen
+        }
+
+        // Query input
+        char c = getchar();
+        switch(c){
+            // Left
+            case 'a':
+                // Check if at edge
+                if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) > 0){
+                    updateScreen = 1;
+                    block.pos.x--;
+                }
+                break;
+            // Up
+            case 'w':
+                updateScreen = 1;
+                block = blockRotateBlock(block, 1);
+                break;
+            // Right
+            case 'd':
+                if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 < TETRIS_WIDTH){
+                    updateScreen = 1;
+                    block.pos.x++;
+                }
+                break;
+            // Down
+            case 's':
+                if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT * 2){
+                    updateScreen = 1;
+                    block.pos.y++;
+                }
+                break;
+        }
+
+        // Do we need to update the screen?
+        if(updateScreen == 1){
+            graphicsDrawFrame(block);
+        }
     }
 }
 
 // Quit Game
 void quit(){
     exit(0);
+}
+
+double getCurrentTimeMs(){
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    return (time.tv_sec * 1000.0) + (time.tv_usec / 1000.0);
 }

@@ -108,4 +108,7 @@ G_Block blockCreateNewBlock();
 // Rotates a block in a direction (1 = CW, -1 = CCW)
 G_Block blockRotateBlock(G_Block block, int dir);
 
+// Get furthest point on the block (1 = Rightward, 0 = Leftward, 2 = Downward)
+G_Position blockGetExtremeOnBlock(G_Block block, int dir);
+
 #endif

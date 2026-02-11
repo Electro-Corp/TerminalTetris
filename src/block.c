@@ -22,3 +22,23 @@ G_Block blockRotateBlock(G_Block block, int dir){
 
     return rotated;
 }
+
+// Get furthest point on the block (1 = Rightward, 0 = Leftward, 2 = Downward)
+G_Position blockGetExtremeOnBlock(G_Block block, int dir){
+    G_Position extreme = {0, 0};
+    switch(dir){
+        // Leftward most chunk
+        case 0:
+            for(int i = 0; i < 4; i++) if(extreme.x > block.shape.spaces[i].x) extreme = block.shape.spaces[i]; 
+            break;
+        // Righward most chunk
+        case 1:
+            for(int i = 0; i < 4; i++) if(extreme.x < block.shape.spaces[i].x) extreme = block.shape.spaces[i]; 
+            break;
+        // Downward most chunk
+        case 2:
+            for(int i = 0; i < 4; i++) if(extreme.y > block.shape.spaces[i].y) extreme = block.shape.spaces[i]; 
+            break;
+    }
+    return extreme;
+}
