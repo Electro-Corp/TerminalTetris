@@ -56,7 +56,10 @@ G_Menu createMainMenu(){
 // Begin Tetris
 void startGame(){
     // Free main menu
-    graphicsFreeMenu(&mainMenu);
+    //graphicsFreeMenu(&mainMenu);
+    // Init backdrop
+    graphicsInitBackdrop();
+    while(1);
 }
 
 // Quit Game

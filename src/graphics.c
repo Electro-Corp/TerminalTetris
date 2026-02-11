@@ -13,7 +13,11 @@ void graphicsInit(){
         terminalHeight = winSize.ws_row;
         terminalWidth = winSize.ws_col;
     }
-    printf("Terminal Size: %d %d\n", terminalHeight, terminalWidth);
+    // Calculate where the game should be
+    gameYOffset = (terminalHeight / 2) - (TETRIS_HEIGHT / 2);
+    gameXOffset = (terminalWidth / 2) - ((strlen(TETRIS_BACKGROUND) * TETRIS_WIDTH) / 2);
+
+    printf("Terminal Size: %d %d\nGame Pos: %d %d", terminalHeight, terminalWidth, gameXOffset, gameYOffset);
 
     // Setup input 
     // Hide Input
@@ -35,12 +39,12 @@ void graphicsMenuLoop(G_Menu* menu){
     // Loop
     while(loop){
         // Clear the screen and move to home position
-        printf("\033[2J]\033[H");
+        printf("\033[2J\033[H");
         fflush(stdout);
         // Render menu
         for(int i = 0; i < menu->optionsCount; i++){
             // Center to screen
-            int xPos = graphicsHelper_GetPositionToCenterText(strlen(menu->options[i].text) + (currentOption == i));
+            int xPos = graphicsHelper_GetPositionToCenterText(strlen(menu->options[i].text) + ((currentOption == i) * 2));
             graphicsHelper_CursorAt(xPos, i + 5);
             // Is this the selected option?
             if(currentOption == i) printf("[%s]\n", menu->options[i].text);
@@ -76,6 +80,28 @@ void graphicsFreeMenu(G_Menu* menu){
     free(menu);
 }
 
+//
+// GAME
+//
+
+// Init backdrop
+void graphicsInitBackdrop(){
+    printf("\033[2J\033[H");
+    graphicsHelper_CursorAt(gameXOffset, gameYOffset);
+    for(int y = gameYOffset; y < gameYOffset + TETRIS_HEIGHT; y++){
+        for(int x = gameXOffset; x < gameXOffset + TETRIS_WIDTH; x++){
+            printf(TETRIS_BACKGROUND);
+        }
+        graphicsHelper_CursorAt(gameXOffset, y);
+    }
+    fflush(stdout);
+}
+
+
+//
+// HELPERS
+// 
+
 // What X-Pos to have centered text
 int graphicsHelper_GetPositionToCenterText(int len){
     return (terminalWidth / 2) - (len / 2);
@@ -84,5 +110,4 @@ int graphicsHelper_GetPositionToCenterText(int len){
 // Move cursor to X, Y position
 void graphicsHelper_CursorAt(int x, int y){
     printf("\033[%d;%dH", y, x);
-    fflush(stdout);
 }
