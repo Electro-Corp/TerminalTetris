@@ -77,6 +77,12 @@ void startGame(){
     srand(time(NULL));
     // Init backdrop
     graphicsInitBackdrop();
+    // Loop
+    tetrisLoop();
+}
+
+// Main loop for tetris game
+void tetrisLoop(){
     // Generate a block
     G_Block block = blockCreateNewBlock();
 
@@ -111,9 +117,14 @@ void startGame(){
             case 'w':
                 updateScreen = 1;
                 block = blockRotateBlock(block, 1);
+                // Check if we need to push the block anyway
+                if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH) block.pos.x--;
+                if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0) block.pos.x++;
+                if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT * 2) block.pos.y--;
                 break;
             // Right
             case 'd':
+                // Check if at edge
                 if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 < TETRIS_WIDTH){
                     updateScreen = 1;
                     block.pos.x++;
@@ -121,6 +132,7 @@ void startGame(){
                 break;
             // Down
             case 's':
+                // Check if at bottom
                 if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT * 2){
                     updateScreen = 1;
                     block.pos.y++;

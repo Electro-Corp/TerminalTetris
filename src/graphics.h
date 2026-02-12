@@ -34,6 +34,16 @@ typedef struct {
 
 // Game
 
+typedef struct {
+    G_Color color;
+    int empty;
+} G_Tile;
+
+// Map
+static G_Tile map[TETRIS_HEIGHT][TETRIS_WIDTH];
+
+// Background color
+static G_Color backgroundColor = {100, 100, 100};
 
 // Open terminal size
 static int terminalWidth, terminalHeight;
@@ -63,7 +73,14 @@ void graphicsInitBackdrop();
 // Draw frame
 void graphicsDrawFrame(G_Block currentBlock);
 
+// Add block to map
+void graphicsAddBlockToMap(G_Block block);
+
+// 
+
+//
 // Helpers
+//
 
 // What X-Pos to have centered text
 int graphicsHelper_GetPositionToCenterText(int len);

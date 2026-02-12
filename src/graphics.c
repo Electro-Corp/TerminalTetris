@@ -21,6 +21,14 @@ void graphicsInit(){
 
     // Hide cursor
     printf("\033[?25l");
+
+    // Init the map
+    for(int y = 0; y < TETRIS_HEIGHT; y++){
+        for(int x = 0; x < TETRIS_WIDTH; x++){
+            G_Tile tmp = {backgroundColor, 0};
+            map[y][x] = tmp;
+        }
+    }
 }
 
 // Init a menu
@@ -83,7 +91,7 @@ void graphicsInitBackdrop(){
     printf("\033[2J\033[H");
     graphicsHelper_CursorAt(gameXOffset, gameYOffset);
     for(int y = gameYOffset; y < gameYOffset + TETRIS_HEIGHT * 2; y++){
-        graphicsHelper_SetColor(100, 100, 100);
+        graphicsHelper_SetColor(backgroundColor.r, backgroundColor.g, backgroundColor.b);
         for(int x = gameXOffset; x < gameXOffset + TETRIS_WIDTH; x++){
             if(y % 2 != 0)
                 printf(TETRIS_BACKGROUND);
@@ -111,6 +119,16 @@ void graphicsDrawFrame(G_Block currentBlock){
         printf("   ");
     }
     fflush(stdout);
+}
+
+// Add block to map
+void graphicsAddBlockToMap(G_Block block){
+    // This function does not care about anything
+    // but pushing the block
+    for(int i = 0; i < 4; i++){
+        G_Tile tile = {block.shape.color, 1};
+        map[block.pos.y - block.shape.spaces[i].y][block.pos.x + block.shape.spaces[i].x] = tile;
+    }
 }
 
 
