@@ -116,9 +116,9 @@ void graphicsInitBackdrop(){
         for(int x = gameXOffset; x < gameXOffset + TETRIS_WIDTH; x++){
             G_Tile tile = map[mapY][x - gameXOffset];
             graphicsHelper_SetColor(tile.color.r, tile.color.g, tile.color.b);
-            printf("-%d-", tile.empty);
+            printf("   ", tile.empty);
         }
-        if(y % 2 == 0) mapY++;
+        if(y % 2 != 0) mapY++;
     }
 }
 
@@ -127,8 +127,8 @@ void graphicsDrawFrame(G_Block currentBlock){
     graphicsInitBackdrop();
     // Debug
     graphicsHelper_SetColor(0, 0, 0);
-    //graphicsHelper_CursorAt(gameXOffset, gameYOffset - 1);
-    //printf("Block Position: %d %d", blockGetExtremeOnBlock(currentBlock, 2).x + currentBlock.pos.x, blockGetExtremeOnBlock(currentBlock, 2).y + currentBlock.pos.y);
+    graphicsHelper_CursorAt(gameXOffset, gameYOffset - 1);
+    printf("Block Position: %d %d", blockGetExtremeOnBlock(currentBlock, 2).x + currentBlock.pos.x, blockGetExtremeOnBlock(currentBlock, 2).y + currentBlock.pos.y);
     // Draw the current block
     graphicsHelper_SetColor(currentBlock.shape.color.r, currentBlock.shape.color.g, currentBlock.shape.color.b);
     for(int i = 0; i < 4; i++){
@@ -142,6 +142,7 @@ void graphicsDrawFrame(G_Block currentBlock){
         graphicsHelper_CursorAt(xPos, yPos);
         printf("   ");
     }
+    graphicsDoWeClear();
     fflush(stdout);
 }
 
@@ -156,6 +157,49 @@ void graphicsAddBlockToMap(G_Block block){
         int yPos = (block.pos.y - 1) + block.shape.spaces[i].y, xPos = block.pos.x + block.shape.spaces[i].x;
         map[yPos][xPos] = tile;
     }
+}
+
+// Check if square below is a block
+int graphicsIsHittingOtherBlock(G_Block block){
+    for(int i = 0; i < 4; i++){
+        G_Position pos = block.shape.spaces[i];
+        pos.x += block.pos.x;
+        pos.y += block.pos.y;
+        if(pos.y < TETRIS_HEIGHT){
+            if(map[pos.y][pos.x].empty){
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+// Check if we need to clear
+void graphicsDoWeClear(){
+    for(int y = 0; y < TETRIS_HEIGHT; y++){
+        int clear = 1; // Clear or not? 
+        for(int i = 0; i < TETRIS_WIDTH; i++){
+            if(!map[y][i].empty) clear = 0; // no
+        }
+        // Did we pass?
+        if(clear){
+            graphicsClearRow(y);
+        }
+    }
+}
+
+// Clear bottom row
+void graphicsClearRow(int row){
+    for(int i = 0; i < TETRIS_WIDTH; i++){
+        map[row][i].empty = 0;
+        map[row][i].color = backgroundColor;
+    }
+
+    // Quick copy
+    G_Tile original[TETRIS_HEIGHT][TETRIS_WIDTH];
+    memcpy(&original, map, PHYS_TETRIS_WIDTH * TETRIS_HEIGHT);
+
+    memcpy(&map + (PHYS_TETRIS_WIDTH + 1), original, (PHYS_TETRIS_WIDTH * (TETRIS_HEIGHT - row)));
 }
 
 

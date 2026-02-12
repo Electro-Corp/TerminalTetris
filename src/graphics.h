@@ -10,11 +10,15 @@
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "block.h"
 
 #define TETRIS_WIDTH 10
 #define TETRIS_HEIGHT 20
+
+#define PHYS_TETRIS_WIDTH (sizeof(G_Tile) * TETRIS_WIDTH)
+#define PHYS_TETRIS_HEIGHT PHYS_TETRIS_WIDTH * TETRIS_HEIGHT
 
 #define TETRIS_BACKGROUND "   "
 
@@ -76,7 +80,14 @@ void graphicsDrawFrame(G_Block currentBlock);
 // Add block to map
 void graphicsAddBlockToMap(G_Block block);
 
-// 
+// Check if square below is a block
+int graphicsIsHittingOtherBlock(G_Block block);
+
+// Check if we need to clear
+void graphicsDoWeClear();
+
+// Clear row
+void graphicsClearRow(int row);
 
 //
 // Helpers

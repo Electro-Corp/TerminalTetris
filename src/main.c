@@ -142,7 +142,7 @@ void tetrisLoop(){
         }
 
         // Check if we should stick
-        if(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT){
+        if(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block)){
             graphicsAddBlockToMap(block);
             block = blockCreateNewBlock();
             updateScreen = 1;
