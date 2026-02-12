@@ -34,7 +34,7 @@ static const G_Shape OrangeRicky = {
         {-1, 0},
         {0, 0},
         {1, 0},
-        {1, 1},
+        {1, -1},
     },
     {100, 100, 50}
 };
@@ -44,7 +44,7 @@ static const G_Shape BlueRicky = {
         {-1, 0},
         {0, 0},
         {1, 0},
-        {-1, 1},
+        {-1, -1},
     },
     {30, 30, 255}
 };
@@ -62,9 +62,9 @@ static const G_Shape ClevelandZ = {
 static const G_Shape RhodeIslandZ = {
     {
         {-1, 0},
-        {0, 1},
+        {0, -1},
         {0, 0},
-        {1, 1},
+        {1, -1},
     },
     {30, 255, 30}
 };
@@ -82,7 +82,7 @@ static const G_Shape Hero = {
 static const G_Shape TeeWee = {
     {
         {-1, 0},
-        {0, 1},
+        {0, -1},
         {0, 0},
         {1, 0},
     },
@@ -92,9 +92,9 @@ static const G_Shape TeeWee = {
 static const G_Shape SmashBoy = {
     {
         {-1, 0},
-        {-1, 1},
+        {-1, -1},
         {0, 0},
-        {0, 1},
+        {0, -1},
     },
     {30, 100, 150}
 };

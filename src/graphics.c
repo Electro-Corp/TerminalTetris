@@ -29,6 +29,11 @@ void graphicsInit(){
             map[y][x] = tmp;
         }
     }
+
+    struct termios termInfo;
+    tcgetattr(STDIN_FILENO, &termInfo);
+    termInfo.c_lflag &= ~ICANON;
+    tcsetattr(STDIN_FILENO, TCSANOW, &termInfo);
 }
 
 // Init a menu
@@ -90,26 +95,40 @@ void graphicsInitBackdrop(){
     graphicsHelper_SetColor(0, 0, 0);
     printf("\033[2J\033[H");
     graphicsHelper_CursorAt(gameXOffset, gameYOffset);
-    for(int y = gameYOffset; y < gameYOffset + TETRIS_HEIGHT * 2; y++){
-        graphicsHelper_SetColor(backgroundColor.r, backgroundColor.g, backgroundColor.b);
-        for(int x = gameXOffset; x < gameXOffset + TETRIS_WIDTH; x++){
-            if(y % 2 != 0)
-                printf(TETRIS_BACKGROUND);
-            else printf("   ");
-        }
-        graphicsHelper_SetColor(0, 0, 0);
+    // for(int y = gameYOffset; y < gameYOffset + (TETRIS_HEIGHT * 2); y++){
+    //     graphicsHelper_CursorAt(gameXOffset, y);
+    //     for(int x = gameXOffset; x < gameXOffset + TETRIS_WIDTH; x++){
+    //         G_Tile tile = map[((y - gameYOffset) / 2)][x - gameXOffset];
+    //         graphicsHelper_SetColor(tile.color.r, tile.color.g, tile.color.b);
+    //         printf("-%d-", tile.empty);
+    //     }
+    // }
+
+    int mapX = 0, mapY = 0;
+
+    for(int y = gameYOffset; y < gameYOffset + (TETRIS_HEIGHT * 2); y++){
         graphicsHelper_CursorAt(gameXOffset, y);
+        for(int x = gameXOffset; x < gameXOffset + TETRIS_WIDTH; x++){
+            G_Tile tile = map[mapY][x - gameXOffset];
+            graphicsHelper_SetColor(tile.color.r, tile.color.g, tile.color.b);
+            printf("-%d-", tile.empty);
+        }
+        if(y % 2 == 0) mapY++;
     }
 }
 
 // Draw frame
 void graphicsDrawFrame(G_Block currentBlock){
     graphicsInitBackdrop();
+    // Debug
+    graphicsHelper_SetColor(0, 0, 0);
+    graphicsHelper_CursorAt(gameXOffset, gameYOffset - 1);
+    printf("Block Position: %d %d", blockGetExtremeOnBlock(currentBlock, 2).x + currentBlock.pos.x, blockGetExtremeOnBlock(currentBlock, 2).y + currentBlock.pos.y);
     // Draw the current block
-    graphicsHelper_SetColor(currentBlock.shape.color.r, currentBlock.shape.color.b, currentBlock.shape.color.g);
+    graphicsHelper_SetColor(currentBlock.shape.color.r, currentBlock.shape.color.g, currentBlock.shape.color.b);
     for(int i = 0; i < 4; i++){
         int xPos = gameXOffset + (currentBlock.pos.x * 3) + (currentBlock.shape.spaces[i].x * 3);
-        int yPos = gameYOffset + currentBlock.pos.y - currentBlock.shape.spaces[i].y;
+        int yPos = gameYOffset + currentBlock.pos.y * 2 + currentBlock.shape.spaces[i].y;
         if((yPos % 2)){
             // Make it thick
             graphicsHelper_CursorAt(xPos, yPos);
@@ -118,7 +137,6 @@ void graphicsDrawFrame(G_Block currentBlock){
         graphicsHelper_CursorAt(xPos, yPos);
         printf("   ");
     }
-    fflush(stdout);
 }
 
 // Add block to map
@@ -126,8 +144,11 @@ void graphicsAddBlockToMap(G_Block block){
     // This function does not care about anything
     // but pushing the block
     for(int i = 0; i < 4; i++){
-        G_Tile tile = {block.shape.color, 1};
-        map[block.pos.y - block.shape.spaces[i].y][block.pos.x + block.shape.spaces[i].x] = tile;
+        G_Tile tile;
+        tile.color = block.shape.color;
+        tile.empty = 1;
+        int yPos = (block.pos.y) + block.shape.spaces[i].y, xPos = block.pos.x + block.shape.spaces[i].x;
+        map[yPos][xPos] = tile;
     }
 }
 

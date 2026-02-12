@@ -2,8 +2,8 @@
 
 // Returns a (kinda) random block
 G_Block blockCreateNewBlock(){
-    int num = (rand() % (7 + 1));
-    G_Block block = {shapes[num], {5, 7}};
+    int num = (rand() % (6 + 1));
+    G_Block block = {shapes[num], {5, 2}};
     return block;
 }
 
@@ -37,7 +37,7 @@ G_Position blockGetExtremeOnBlock(G_Block block, int dir){
             break;
         // Downward most chunk
         case 2:
-            for(int i = 0; i < 4; i++) if(extreme.y > block.shape.spaces[i].y) extreme = block.shape.spaces[i]; 
+            for(int i = 0; i < 4; i++) if(extreme.y < block.shape.spaces[i].y) extreme = block.shape.spaces[i]; 
             break;
     }
     return extreme;

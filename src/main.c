@@ -14,7 +14,7 @@
 // Variables
 G_Menu mainMenu; // Main menu
 G_Menu pauseMenu; // Pause menu
-int fallTick = 1000; // ms for a block to fall 
+int fallTick = 500; // ms for a block to fall 
 
 //
 // Main menu options
@@ -117,7 +117,7 @@ void tetrisLoop(){
             case 'w':
                 updateScreen = 1;
                 block = blockRotateBlock(block, 1);
-                // Check if we need to push the block anyway
+                // Check if we need to push the block away
                 if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH) block.pos.x--;
                 if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0) block.pos.x++;
                 if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT * 2) block.pos.y--;
@@ -133,11 +133,18 @@ void tetrisLoop(){
             // Down
             case 's':
                 // Check if at bottom
-                if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT * 2){
+                if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT){
                     updateScreen = 1;
                     block.pos.y++;
                 }
                 break;
+        }
+
+        // Check if we should stick
+        if(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT){
+            graphicsAddBlockToMap(block);
+            block = blockCreateNewBlock();
+            updateScreen = 1;
         }
 
         // Do we need to update the screen?
