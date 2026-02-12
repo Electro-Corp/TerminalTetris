@@ -30,10 +30,15 @@ void graphicsInit(){
         }
     }
 
+    // Setup input 
+    // Hide Input
     struct termios termInfo;
-    tcgetattr(STDIN_FILENO, &termInfo);
+    tcgetattr(0, &termInfo);
     termInfo.c_lflag &= ~ICANON;
-    tcsetattr(STDIN_FILENO, TCSANOW, &termInfo);
+    termInfo.c_lflag &= ~ECHO;
+    termInfo.c_cc[VMIN] = 1;
+    termInfo.c_cc[VTIME] = 0;
+    tcsetattr(0, TCSANOW, &termInfo);
 }
 
 // Init a menu
@@ -122,8 +127,8 @@ void graphicsDrawFrame(G_Block currentBlock){
     graphicsInitBackdrop();
     // Debug
     graphicsHelper_SetColor(0, 0, 0);
-    graphicsHelper_CursorAt(gameXOffset, gameYOffset - 1);
-    printf("Block Position: %d %d", blockGetExtremeOnBlock(currentBlock, 2).x + currentBlock.pos.x, blockGetExtremeOnBlock(currentBlock, 2).y + currentBlock.pos.y);
+    //graphicsHelper_CursorAt(gameXOffset, gameYOffset - 1);
+    //printf("Block Position: %d %d", blockGetExtremeOnBlock(currentBlock, 2).x + currentBlock.pos.x, blockGetExtremeOnBlock(currentBlock, 2).y + currentBlock.pos.y);
     // Draw the current block
     graphicsHelper_SetColor(currentBlock.shape.color.r, currentBlock.shape.color.g, currentBlock.shape.color.b);
     for(int i = 0; i < 4; i++){
@@ -137,6 +142,7 @@ void graphicsDrawFrame(G_Block currentBlock){
         graphicsHelper_CursorAt(xPos, yPos);
         printf("   ");
     }
+    fflush(stdout);
 }
 
 // Add block to map
@@ -147,7 +153,7 @@ void graphicsAddBlockToMap(G_Block block){
         G_Tile tile;
         tile.color = block.shape.color;
         tile.empty = 1;
-        int yPos = (block.pos.y) + block.shape.spaces[i].y, xPos = block.pos.x + block.shape.spaces[i].x;
+        int yPos = (block.pos.y - 1) + block.shape.spaces[i].y, xPos = block.pos.x + block.shape.spaces[i].x;
         map[yPos][xPos] = tile;
     }
 }

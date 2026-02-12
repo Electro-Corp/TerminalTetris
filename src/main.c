@@ -64,15 +64,13 @@ G_Menu createMainMenu(){
 void startGame(){
     // Free main menu
     //graphicsFreeMenu(&mainMenu);
-    // Setup input 
-    // Hide Input
     struct termios termInfo;
-    tcgetattr(STDIN_FILENO, &termInfo);
+    tcgetattr(0, &termInfo);
     termInfo.c_lflag &= ~ICANON;
     termInfo.c_lflag &= ~ECHO;
     termInfo.c_cc[VMIN] = 0;
     termInfo.c_cc[VTIME] = 0;
-    tcsetattr(STDIN_FILENO, TCSANOW, &termInfo);
+    tcsetattr(0, TCSANOW, &termInfo);
     // Ready randomness
     srand(time(NULL));
     // Init backdrop
@@ -103,41 +101,44 @@ void tetrisLoop(){
         }
 
         // Query input
-        char c = getchar();
-        switch(c){
-            // Left
-            case 'a':
-                // Check if at edge
-                if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) > 0){
+        char c;
+        read(0, &c, 1);
+        if(c != EOF){
+            switch(c){
+                // Left
+                case 'a':
+                    // Check if at edge
+                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) > 0){
+                        updateScreen = 1;
+                        block.pos.x--;
+                    }
+                    break;
+                // Up
+                case 'w':
                     updateScreen = 1;
-                    block.pos.x--;
-                }
-                break;
-            // Up
-            case 'w':
-                updateScreen = 1;
-                block = blockRotateBlock(block, 1);
-                // Check if we need to push the block away
-                if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH) block.pos.x--;
-                if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0) block.pos.x++;
-                if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT * 2) block.pos.y--;
-                break;
-            // Right
-            case 'd':
-                // Check if at edge
-                if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 < TETRIS_WIDTH){
-                    updateScreen = 1;
-                    block.pos.x++;
-                }
-                break;
-            // Down
-            case 's':
-                // Check if at bottom
-                if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT){
-                    updateScreen = 1;
-                    block.pos.y++;
-                }
-                break;
+                    block = blockRotateBlock(block, 1);
+                    // Check if we need to push the block away
+                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH) block.pos.x--;
+                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0) block.pos.x++;
+                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT * 2) block.pos.y--;
+                    break;
+                // Right
+                case 'd':
+                    // Check if at edge
+                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 < TETRIS_WIDTH){
+                        updateScreen = 1;
+                        block.pos.x++;
+                    }
+                    break;
+                // Down
+                case 's':
+                    // Check if at bottom
+                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT){
+                        updateScreen = 1;
+                        block.pos.y++;
+                    }
+                    break;
+            }
         }
 
         // Check if we should stick
@@ -151,6 +152,9 @@ void tetrisLoop(){
         if(updateScreen == 1){
             graphicsDrawFrame(block);
         }
+
+        //usleep(20000);
+        while ((c = getchar()) != '\n' && c != EOF);
     }
 }
 
