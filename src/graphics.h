@@ -87,6 +87,9 @@ void graphicsInitBackdrop();
 // Draw frame
 void graphicsDrawFrame(G_Block currentBlock);
 
+// Draw pause
+void graphicsDrawPause();
+
 // Add block to map
 void graphicsAddBlockToMap(G_Block block);
 

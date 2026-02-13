@@ -101,7 +101,7 @@ void graphicsInitBackdrop(){
     printf("\033[2J\033[H");
     // Game Title
     graphicsHelper_CursorAt(gameXOffset, gameYOffset - 1);
-    printf("TERMINAL TETRIS");
+    printf("T  E  T  R  I  S");
     // Get ready
     graphicsHelper_CursorAt(gameXOffset, gameYOffset);
 
@@ -167,6 +167,20 @@ void graphicsDrawFrame(G_Block currentBlock){
     redrawTime = 0;
     graphicsDoWeClear();
 }   
+
+// Draw pause
+void graphicsDrawPause(){
+    graphicsHelper_SetColor(150, 150, 150);
+    for(int y = gameYOffset + TETRIS_HEIGHT - 2; y < gameYOffset + (TETRIS_HEIGHT + 2); y++){
+        for(int x = gameXOffset + 5; x < gameXOffset + 25; x++){
+            graphicsHelper_CursorAt(x, y);
+            printf(" ");
+        }
+    }
+    graphicsHelper_SetColor(100, 100, 100);
+    graphicsHelper_CursorAt(gameXOffset + 9, gameYOffset + TETRIS_HEIGHT);
+    printf("P A U S E D");
+}
 
 // Add block to map
 void graphicsAddBlockToMap(G_Block block){

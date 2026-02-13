@@ -103,7 +103,7 @@ void tetrisLoop(){
     G_Block block = blockGetNextBlock();
     // Loop variables
     double lastMs = 0.0;
-    int updateScreen = 0;
+    int updateScreen = 0, paused = 0;
 
     // Draw first frame
     graphicsDrawFrame(block);
@@ -111,7 +111,7 @@ void tetrisLoop(){
     while(1){
         updateScreen = 0;
         // Check if block should fall
-        if(getCurrentTimeMs() - lastMs > fallTick){
+        if(getCurrentTimeMs() - lastMs > fallTick && !paused){
             block.pos.y++;
             lastMs = getCurrentTimeMs();
             updateScreen = 1; // Yes, update screen
@@ -119,40 +119,57 @@ void tetrisLoop(){
 
         // Query input
         char c = getchar();
-        switch(c){
-            // Left
-            case 'a':
-                // Check if at edge
-                if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) > 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)){
-                    updateScreen = 1;
-                    block.pos.x--;
-                }
-                break;
-            // Up
-            case 'w':
+        // Special paused senario
+        if(c == 'p'){
+            // Are we already paused?
+            if(paused){
+                // Unpause
                 updateScreen = 1;
-                block = blockRotateBlock(block, 1);
-                // Check if we need to push the block away
-                if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)) block.pos.x--;
-                if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)) block.pos.x++;
-                if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT * 2) block.pos.y--;
-                break;
-            // Right
-            case 'd':
-                // Check if at edge
-                if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 < TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)){
+                paused = 0;
+                // Redraw background
+                graphicsInitBackdrop();
+            }else{
+                // Pause..
+                graphicsDrawPause();
+                paused = 1;
+            }
+        }
+        if(!paused){
+            switch(c){
+                // Left
+                case 'a':
+                    // Check if at edge
+                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) > 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)){
+                        updateScreen = 1;
+                        block.pos.x--;
+                    }
+                    break;
+                // Up
+                case 'w':
                     updateScreen = 1;
-                    block.pos.x++;
-                }
-                break;
-            // Down
-            case 's':
-                // Check if at bottom
-                if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT){
-                    updateScreen = 1;
-                    block.pos.y++;
-                }
-                break;
+                    block = blockRotateBlock(block, 1);
+                    // Check if we need to push the block away
+                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)) block.pos.x--;
+                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)) block.pos.x++;
+                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT * 2) block.pos.y--;
+                    break;
+                // Right
+                case 'd':
+                    // Check if at edge
+                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 < TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)){
+                        updateScreen = 1;
+                        block.pos.x++;
+                    }
+                    break;
+                // Down
+                case 's':
+                    // Check if at bottom
+                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT){
+                        updateScreen = 1;
+                        block.pos.y++;
+                    }
+                    break;
+            }
         }
         
 
