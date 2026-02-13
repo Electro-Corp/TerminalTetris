@@ -262,7 +262,7 @@ void graphicsDoWeClear(){
 
     if(lines > 0){
         linesCleared += lines;
-        score += (1 * (lines % 10));
+        level += (1 * (lines % 10));
     }
 }
 
