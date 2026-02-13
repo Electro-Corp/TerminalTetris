@@ -99,6 +99,10 @@ void graphicsFreeMenu(G_Menu* menu){
 void graphicsInitBackdrop(){
     graphicsHelper_SetColor(0, 0, 0);
     printf("\033[2J\033[H");
+    // Game Title
+    graphicsHelper_CursorAt(gameXOffset, gameYOffset - 1);
+    printf("TERMINAL TETRIS");
+    // Get ready
     graphicsHelper_CursorAt(gameXOffset, gameYOffset);
 
     int mapX = 0, mapY = 0;
@@ -112,6 +116,19 @@ void graphicsInitBackdrop(){
         }
         if(y % 2 != 0) mapY++;
     }
+
+    // Get next block
+    G_Block next = blockGetComingUp();
+    // Print title
+    graphicsHelper_SetColor(0, 0, 0);
+    graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 1, NEXT_BLOCK_VISUAL_Y + gameYOffset - 3);
+    printf("Next block: ");
+    // Draw next block
+    graphicsHelper_SetColor(next.shape.color.r, next.shape.color.g, next.shape.color.b);
+    for(int i = 0; i < 4; i++){
+        graphicsHelper_CursorAt(NEXT_BLOCK_VISUAL_X + gameXOffset + (TETRIS_WIDTH * 3) + next.shape.spaces[i].x, NEXT_BLOCK_VISUAL_Y + gameYOffset + next.shape.spaces[i].y);
+        printf("  ", next.pos.x);
+    }
 }
 
 // Draw frame
@@ -123,10 +140,14 @@ void graphicsDrawFrame(G_Block currentBlock){
         printf("   ");
     }
     if(redrawTime) graphicsInitBackdrop();
-    // Debug
+        
+    // Draw information
     graphicsHelper_SetColor(0, 0, 0);
-    graphicsHelper_CursorAt(gameXOffset, gameYOffset - 1);
-    printf("Block Position: %d %d", blockGetExtremeOnBlock(currentBlock, 2).x + currentBlock.pos.x, blockGetExtremeOnBlock(currentBlock, 2).y + currentBlock.pos.y);
+    graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 1.5));
+    printf("SCORE: %d", score);
+    graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 1.5) + 2);
+    printf("LEVEL: %d", level);
+    
     // Draw the current block
     graphicsHelper_SetColor(currentBlock.shape.color.r, currentBlock.shape.color.g, currentBlock.shape.color.b);
     for(int i = 0; i < 4; i++){
@@ -204,6 +225,9 @@ int graphicsSquareHittingBook(G_Position root, G_Position pos, int dir){
 
 // Check if we need to clear
 void graphicsDoWeClear(){
+    // How many cleared lines
+    int lines = 0;
+    // Check
     for(int y = 0; y < TETRIS_HEIGHT; y++){
         int clear = 1; // Clear or not? 
         for(int i = 0; i < TETRIS_WIDTH; i++){
@@ -213,7 +237,32 @@ void graphicsDoWeClear(){
         if(clear){
             redrawTime = 1;
             graphicsClearRow(y);
+            lines++;
         }
+    }
+    // Update score
+    switch(lines){
+        case 0:
+            // No lines cleared, don't do jack
+            break;
+        case 1:
+            score += 40 * (level + 1);
+            break;
+        case 2:
+            score += 100 * (level + 1);
+            break;
+        case 3:
+            score += 300 * (level + 1);
+            break;
+        default:
+        case 4:
+            score += 1200 * (level + 1);
+            break;
+    }
+
+    if(lines > 0){
+        linesCleared += lines;
+        score += (1 * (lines % 10));
     }
 }
 

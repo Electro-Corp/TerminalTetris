@@ -99,11 +99,23 @@ static const G_Shape SmashBoy = {
     {30, 100, 150}
 };
 
-
+static int chosen[7] = {0, 0, 0, 0, 0, 0, 0};
 static G_Shape shapes[7] = {OrangeRicky, BlueRicky, ClevelandZ, RhodeIslandZ, Hero, TeeWee, SmashBoy};
+static int chosenSoFar = 0;
+
+static G_Block nextBlock, comingUp;
+
+// Create first block
+void blockSetup();
 
 // Returns a (kinda) random block
 G_Block blockCreateNewBlock();
+
+// Get next block
+G_Block blockGetNextBlock();
+
+// Get coming up block
+G_Block blockGetComingUp();
 
 // Rotates a block in a direction (1 = CW, -1 = CCW)
 G_Block blockRotateBlock(G_Block block, int dir);

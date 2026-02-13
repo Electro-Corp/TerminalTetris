@@ -20,6 +20,9 @@
 #define PHYS_TETRIS_WIDTH (sizeof(G_Tile) * TETRIS_WIDTH)
 #define PHYS_TETRIS_HEIGHT PHYS_TETRIS_WIDTH * TETRIS_HEIGHT
 
+#define NEXT_BLOCK_VISUAL_X 5
+#define NEXT_BLOCK_VISUAL_Y 5
+
 #define TETRIS_BACKGROUND "   "
 
 // Two types of display modes, Menu and Game
@@ -56,6 +59,10 @@ static int gameXOffset, gameYOffset;
 // Variables for when the screen should be fully redrawn
 static int redrawTime = 1; 
 static G_Position refill[4];
+// Game vars
+static int level = 0;
+static int score = 0;
+static int linesCleared = 0;
 
 // Init graphics zone, based on current terminal size
 void graphicsInit();

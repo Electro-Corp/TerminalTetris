@@ -89,6 +89,8 @@ void startGame(){
     tcsetattr(0, TCSANOW, &termInfo);
     // Ready randomness
     srand(time(NULL));
+    // Setup blocks
+    blockSetup();
     // Init backdrop
     graphicsInitBackdrop();
     // Loop
@@ -97,9 +99,8 @@ void startGame(){
 
 // Main loop for tetris game
 void tetrisLoop(){
-    // Generate a block
-    G_Block block = blockCreateNewBlock();
-
+    // Get a block
+    G_Block block = blockGetNextBlock();
     // Loop variables
     double lastMs = 0.0;
     int updateScreen = 0;
@@ -158,7 +159,7 @@ void tetrisLoop(){
         // Check if we should stick
         if(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block)){
             graphicsAddBlockToMap(block);
-            block = blockCreateNewBlock();
+            block = blockGetNextBlock();
             updateScreen = 1;
         }
 
