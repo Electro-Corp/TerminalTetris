@@ -106,6 +106,9 @@ void graphicsDoWeClear();
 // Clear row
 void graphicsClearRow(int row);
 
+// Add to score
+void graphicsAddToScore(int n);
+
 //
 // Helpers
 //

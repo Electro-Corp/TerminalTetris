@@ -170,6 +170,15 @@ void tetrisLoop(){
                         block.pos.y++;
                     }
                     break;
+                // Push block down 
+                case ' ':
+                    int blocksFallen = 0;
+                    while(!(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block))){
+                        block.pos.y++;
+                        blocksFallen++;
+                        updateScreen = 1;
+                    }
+                    graphicsAddToScore(blocksFallen);
             }
         }
         

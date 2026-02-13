@@ -296,6 +296,11 @@ void graphicsClearRow(int row){
     }
 }
 
+// Add to score
+void graphicsAddToScore(int n){
+    score += n;
+}
+
 
 //
 // HELPERS
