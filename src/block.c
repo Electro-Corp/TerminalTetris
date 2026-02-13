@@ -21,7 +21,7 @@ G_Block blockCreateNewBlock(){
         for(int i = 0; i < 7; i++) chosen[i] = 0;
         chosenSoFar = 0;
     }
-    G_Block block = {shapes[num], {5, 2}};
+    G_Block block = {shapes[num], {5, 1}};
     return block;
 }
 

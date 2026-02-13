@@ -324,5 +324,5 @@ void graphicsHelper_SetColor(int r, int g, int b){
 // Reset terminal pos and color
 void graphicsHelper_ResetTerm(){
     printf("\033[2J\033[H\033[0m");
-    printf("\033[5m");
+    printf("\033[?25h");
 }
