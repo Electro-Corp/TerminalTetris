@@ -37,7 +37,7 @@ void interrupt(int);
 // Restore terminal mode
 void restoreTermMode();
 
-int main(int args, char* argv){
+int main(int args, char** argv){
     // Capture original terminal settings
     tcgetattr(0, &originalTerm);
     // Setup signals

@@ -5,6 +5,8 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
+#include <stdlib.h>
+
 typedef struct {
     int x, y;
 } G_Position;
