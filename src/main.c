@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
+#include <signal.h>
 
 // Non-std
 #include "graphics.h"
@@ -15,6 +16,7 @@
 G_Menu mainMenu; // Main menu
 G_Menu pauseMenu; // Pause menu
 int fallTick = 500; // ms for a block to fall 
+struct termios originalTerm; // Original terminal settings
 
 //
 // Main menu options
@@ -27,7 +29,19 @@ G_Menu createMainMenu(); // Create main menu
 void tetrisLoop(); // Main loop of tetris
 double getCurrentTimeMs(); // I wonder....
 
+// Signals
+void segfault(int);
+void interrupt(int);
+
+// Restore terminal mode
+void restoreTermMode();
+
 int main(int args, char* argv){
+    // Capture original terminal settings
+    tcgetattr(0, &originalTerm);
+    // Setup signals
+    signal(SIGINT, interrupt);
+    signal(SIGSEGV, segfault);
     // Guess
     graphicsInit();
 
@@ -167,4 +181,23 @@ double getCurrentTimeMs(){
     struct timeval time;
     gettimeofday(&time, NULL);
     return (time.tv_sec * 1000.0) + (time.tv_usec / 1000.0);
+}
+
+// Signals
+void segfault(int){
+    restoreTermMode();
+    printf("Segmentation Fault... oops...\n");
+    exit(-1);
+}
+
+void interrupt(int){
+    restoreTermMode();
+    printf("Exiting TerminalTetris.\n");
+    exit();
+}
+
+// Restore terminal mode
+void restoreTermMode(){
+    tcsetattr(0, TCSANOW, &originalTerm);
+    graphicsHelper_ResetTerm();
 }

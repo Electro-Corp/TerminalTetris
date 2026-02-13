@@ -20,7 +20,7 @@ void graphicsInit(){
     printf("Terminal Size: %d %d\nGame Pos: %d %d", terminalHeight, terminalWidth, gameXOffset, gameYOffset);
 
     // Hide cursor
-    printf("\033[?25l");
+    printf("\033[?25m");
 
     // Init the map
     for(int y = 0; y < TETRIS_HEIGHT; y++){
@@ -134,7 +134,7 @@ void graphicsDrawFrame(G_Block currentBlock){
     for(int i = 0; i < 4; i++){
         int xPos = gameXOffset + (currentBlock.pos.x * 3) + (currentBlock.shape.spaces[i].x * 3);
         int yPos = gameYOffset + currentBlock.pos.y * 2 + currentBlock.shape.spaces[i].y;
-        if((yPos % 2)){
+        if(!(yPos % 2)){
             // Make it thick
             graphicsHelper_CursorAt(xPos, yPos);
             printf("   ");
@@ -143,8 +143,8 @@ void graphicsDrawFrame(G_Block currentBlock){
         printf("   ");
     }
     graphicsDoWeClear();
-    fflush(stdout);
-}
+    //fflush(stdout);
+}   
 
 // Add block to map
 void graphicsAddBlockToMap(G_Block block){
@@ -195,11 +195,9 @@ void graphicsClearRow(int row){
         map[row][i].color = backgroundColor;
     }
 
-    // Quick copy
-    G_Tile original[TETRIS_HEIGHT][TETRIS_WIDTH];
-    memcpy(&original, map, PHYS_TETRIS_WIDTH * TETRIS_HEIGHT);
-
-    memcpy(&map + (PHYS_TETRIS_WIDTH + 1), original, (PHYS_TETRIS_WIDTH * (TETRIS_HEIGHT - row)));
+    for(int i = row; i > 0; i--){
+        memcpy(map[i], map[i - 1], PHYS_TETRIS_WIDTH);
+    }
 }
 
 
@@ -220,4 +218,10 @@ void graphicsHelper_CursorAt(int x, int y){
 // Set terminal color
 void graphicsHelper_SetColor(int r, int g, int b){
     printf("\033[48;2;%d;%d;%dm", r, g, b);
+}
+
+// Reset terminal pos and color
+void graphicsHelper_ResetTerm(){
+    printf("\033[2J\033[H\033[0m");
+    printf("\033[5m");
 }

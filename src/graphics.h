@@ -102,4 +102,7 @@ void graphicsHelper_CursorAt(int x, int y);
 // Set terminal color
 void graphicsHelper_SetColor(int r, int g, int b);
 
+// Reset terminal pos and color
+void graphicsHelper_ResetTerm();
+
 #endif
