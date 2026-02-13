@@ -16,6 +16,7 @@
 G_Menu mainMenu; // Main menu
 G_Menu pauseMenu; // Pause menu
 int fallTick = 500; // ms for a block to fall 
+int frameTime = 100; // ms to wait after a frame
 struct termios originalTerm; // Original terminal settings
 
 //
@@ -165,10 +166,13 @@ void tetrisLoop(){
         // Do we need to update the screen?
         if(updateScreen == 1){
             graphicsDrawFrame(block);
+            fflush(stdout);
         }
 
-        //usleep(20000);
-        while ((c = getchar()) != '\n' && c != EOF);
+        //usleep(200000);
+        double s = getCurrentTimeMs();
+        while(getCurrentTimeMs() - s < frameTime);
+        //while ((c = getchar()) != '\n' && c != EOF);
     }
 }
 
@@ -193,7 +197,7 @@ void segfault(int){
 void interrupt(int){
     restoreTermMode();
     printf("Exiting TerminalTetris.\n");
-    exit();
+    exit(0);
 }
 
 // Restore terminal mode

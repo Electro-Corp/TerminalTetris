@@ -100,14 +100,6 @@ void graphicsInitBackdrop(){
     graphicsHelper_SetColor(0, 0, 0);
     printf("\033[2J\033[H");
     graphicsHelper_CursorAt(gameXOffset, gameYOffset);
-    // for(int y = gameYOffset; y < gameYOffset + (TETRIS_HEIGHT * 2); y++){
-    //     graphicsHelper_CursorAt(gameXOffset, y);
-    //     for(int x = gameXOffset; x < gameXOffset + TETRIS_WIDTH; x++){
-    //         G_Tile tile = map[((y - gameYOffset) / 2)][x - gameXOffset];
-    //         graphicsHelper_SetColor(tile.color.r, tile.color.g, tile.color.b);
-    //         printf("-%d-", tile.empty);
-    //     }
-    // }
 
     int mapX = 0, mapY = 0;
 
@@ -143,7 +135,6 @@ void graphicsDrawFrame(G_Block currentBlock){
         printf("   ");
     }
     graphicsDoWeClear();
-    //fflush(stdout);
 }   
 
 // Add block to map
