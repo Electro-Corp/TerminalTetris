@@ -79,6 +79,7 @@ G_Menu createMainMenu(){
 void startGame(){
     // Free main menu
     //graphicsFreeMenu(&mainMenu);
+    // Set input mode
     struct termios termInfo;
     tcgetattr(0, &termInfo);
     termInfo.c_lflag &= ~ICANON;
@@ -116,14 +117,14 @@ void tetrisLoop(){
         }
 
         // Query input
-        char c;
-        read(0, &c, 1);
+        char c = getchar();
+        //read(0, &c, 1);
         if(c != EOF){
             switch(c){
                 // Left
                 case 'a':
                     // Check if at edge
-                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) > 0){
+                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) > 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)){
                         updateScreen = 1;
                         block.pos.x--;
                     }
@@ -133,14 +134,14 @@ void tetrisLoop(){
                     updateScreen = 1;
                     block = blockRotateBlock(block, 1);
                     // Check if we need to push the block away
-                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH) block.pos.x--;
-                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0) block.pos.x++;
+                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)) block.pos.x--;
+                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)) block.pos.x++;
                     if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT * 2) block.pos.y--;
                     break;
                 // Right
                 case 'd':
                     // Check if at edge
-                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 < TETRIS_WIDTH){
+                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 < TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)){
                         updateScreen = 1;
                         block.pos.x++;
                     }
@@ -170,8 +171,8 @@ void tetrisLoop(){
         }
 
         //usleep(200000);
-        double s = getCurrentTimeMs();
-        while(getCurrentTimeMs() - s < frameTime);
+        //double s = getCurrentTimeMs();
+        //while(getCurrentTimeMs() - s < frameTime);
         //while ((c = getchar()) != '\n' && c != EOF);
     }
 }

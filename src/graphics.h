@@ -83,6 +83,9 @@ void graphicsAddBlockToMap(G_Block block);
 // Check if square below is a block
 int graphicsIsHittingOtherBlock(G_Block block);
 
+// Check if a specfic square is boutta hit a block
+int graphicsSquareHittingBook(G_Position root, G_Position pos, int dir);
+
 // Check if we need to clear
 void graphicsDoWeClear();
 

@@ -153,15 +153,40 @@ void graphicsAddBlockToMap(G_Block block){
 // Check if square below is a block
 int graphicsIsHittingOtherBlock(G_Block block){
     for(int i = 0; i < 4; i++){
-        G_Position pos = block.shape.spaces[i];
-        pos.x += block.pos.x;
-        pos.y += block.pos.y;
-        if(pos.y < TETRIS_HEIGHT){
-            if(map[pos.y][pos.x].empty){
-                return 1;
-            }
+        if(graphicsSquareHittingBook(block.pos, block.shape.spaces[i], 2)){
+            return 1;
         }
     }
+    return 0;
+}
+
+
+// Check if a specfic square is boutta hit a block
+int graphicsSquareHittingBook(G_Position root, G_Position pos, int dir){
+    G_Position tmp = pos;
+    tmp.x += root.x;
+    tmp.y += root.y;
+    switch(dir){
+        // Left
+        case 0:
+            if(tmp.x > 0){
+                if(map[tmp.y][tmp.x - 1].empty) return 1;
+            }
+            break;
+        // Right
+        case 1:
+            if(tmp.x < TETRIS_WIDTH){
+                if(map[tmp.y][tmp.x + 1].empty) return 1;
+            }
+            break;
+        // Down
+        case 2: 
+            if(tmp.y < TETRIS_HEIGHT){
+                if(map[tmp.y][tmp.x].empty) return 1;
+            }
+            break;
+    }
+    
     return 0;
 }
 
