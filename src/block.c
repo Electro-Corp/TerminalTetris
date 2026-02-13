@@ -19,6 +19,7 @@ G_Block blockCreateNewBlock(){
     // If we've chosen 7 so far, reset chosen
     if(chosenSoFar > 5){
         for(int i = 0; i < 7; i++) chosen[i] = 0;
+        chosenSoFar = 0;
     }
     G_Block block = {shapes[num], {5, 2}};
     return block;

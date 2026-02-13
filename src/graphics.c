@@ -20,7 +20,7 @@ void graphicsInit(){
     printf("Terminal Size: %d %d\nGame Pos: %d %d", terminalHeight, terminalWidth, gameXOffset, gameYOffset);
 
     // Hide cursor
-    printf("\033[?25m");
+    printf("\033[?25l");
 
     // Init the map
     for(int y = 0; y < TETRIS_HEIGHT; y++){
@@ -147,6 +147,8 @@ void graphicsDrawFrame(G_Block currentBlock){
     printf("SCORE: %d", score);
     graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 1.5) + 2);
     printf("LEVEL: %d", level);
+    graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 1.5) + 4);
+    printf("CLEARED: %d", linesCleared);
     
     // Draw the current block
     graphicsHelper_SetColor(currentBlock.shape.color.r, currentBlock.shape.color.g, currentBlock.shape.color.b);
@@ -275,8 +277,10 @@ void graphicsDoWeClear(){
     }
 
     if(lines > 0){
-        linesCleared += lines;
-        level += (1 * (lines % 10));
+        for(int i = 0; i < lines; i++){
+            linesCleared++;
+            if(linesCleared % 10 == 0) level++;
+        }
     }
 }
 

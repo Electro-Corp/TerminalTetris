@@ -119,6 +119,7 @@ void tetrisLoop(){
 
         // Query input
         char c = getchar();
+        read(0, &c, 1);
         // Special paused senario
         if(c == 'p'){
             // Are we already paused?
