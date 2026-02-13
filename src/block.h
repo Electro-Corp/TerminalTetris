@@ -36,7 +36,7 @@ static const G_Shape OrangeRicky = {
         {1, 0},
         {1, -1},
     },
-    {100, 100, 50}
+    {255, 130, 0}
 };
 
 static const G_Shape BlueRicky = {
@@ -62,9 +62,9 @@ static const G_Shape ClevelandZ = {
 static const G_Shape RhodeIslandZ = {
     {
         {-1, 0},
-        {0, -1},
+        {0, 1},
         {0, 0},
-        {1, -1},
+        {1, 1},
     },
     {30, 255, 30}
 };

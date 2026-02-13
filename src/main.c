@@ -16,7 +16,7 @@
 G_Menu mainMenu; // Main menu
 G_Menu pauseMenu; // Pause menu
 int fallTick = 500; // ms for a block to fall 
-int frameTime = 100; // ms to wait after a frame
+int frameTime = 10; // ms to wait after a frame
 struct termios originalTerm; // Original terminal settings
 
 //
@@ -118,44 +118,42 @@ void tetrisLoop(){
 
         // Query input
         char c = getchar();
-        //read(0, &c, 1);
-        if(c != EOF){
-            switch(c){
-                // Left
-                case 'a':
-                    // Check if at edge
-                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) > 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)){
-                        updateScreen = 1;
-                        block.pos.x--;
-                    }
-                    break;
-                // Up
-                case 'w':
+        switch(c){
+            // Left
+            case 'a':
+                // Check if at edge
+                if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) > 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)){
                     updateScreen = 1;
-                    block = blockRotateBlock(block, 1);
-                    // Check if we need to push the block away
-                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)) block.pos.x--;
-                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)) block.pos.x++;
-                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT * 2) block.pos.y--;
-                    break;
-                // Right
-                case 'd':
-                    // Check if at edge
-                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 < TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)){
-                        updateScreen = 1;
-                        block.pos.x++;
-                    }
-                    break;
-                // Down
-                case 's':
-                    // Check if at bottom
-                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT){
-                        updateScreen = 1;
-                        block.pos.y++;
-                    }
-                    break;
-            }
+                    block.pos.x--;
+                }
+                break;
+            // Up
+            case 'w':
+                updateScreen = 1;
+                block = blockRotateBlock(block, 1);
+                // Check if we need to push the block away
+                if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)) block.pos.x--;
+                if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)) block.pos.x++;
+                if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT * 2) block.pos.y--;
+                break;
+            // Right
+            case 'd':
+                // Check if at edge
+                if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 < TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)){
+                    updateScreen = 1;
+                    block.pos.x++;
+                }
+                break;
+            // Down
+            case 's':
+                // Check if at bottom
+                if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT){
+                    updateScreen = 1;
+                    block.pos.y++;
+                }
+                break;
         }
+        
 
         // Check if we should stick
         if(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block)){
@@ -171,14 +169,14 @@ void tetrisLoop(){
         }
 
         //usleep(200000);
-        //double s = getCurrentTimeMs();
-        //while(getCurrentTimeMs() - s < frameTime);
-        //while ((c = getchar()) != '\n' && c != EOF);
+        double s = getCurrentTimeMs();
     }
 }
 
 // Quit Game
 void quit(){
+    restoreTermMode();
+    printf("Exiting...\n");
     exit(0);
 }
 

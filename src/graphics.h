@@ -53,6 +53,9 @@ static G_Color backgroundColor = {100, 100, 100};
 static int terminalWidth, terminalHeight;
 // Where the game should be
 static int gameXOffset, gameYOffset;
+// Variables for when the screen should be fully redrawn
+static int redrawTime = 1; 
+static G_Position refill[4];
 
 // Init graphics zone, based on current terminal size
 void graphicsInit();

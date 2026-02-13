@@ -116,7 +116,13 @@ void graphicsInitBackdrop(){
 
 // Draw frame
 void graphicsDrawFrame(G_Block currentBlock){
-    graphicsInitBackdrop();
+    // Clear the last drawn pos
+    graphicsHelper_SetColor(backgroundColor.r, backgroundColor.g, backgroundColor.b);
+    for(int i = 0; i < 4; i++) {
+        graphicsHelper_CursorAt(refill[i].x, refill[i].y);
+        printf("   ");
+    }
+    if(redrawTime) graphicsInitBackdrop();
     // Debug
     graphicsHelper_SetColor(0, 0, 0);
     graphicsHelper_CursorAt(gameXOffset, gameYOffset - 1);
@@ -133,7 +139,11 @@ void graphicsDrawFrame(G_Block currentBlock){
         }
         graphicsHelper_CursorAt(xPos, yPos);
         printf("   ");
+        // Save for next frame 
+        refill[i].x = xPos;
+        refill[i].y = yPos;
     }
+    redrawTime = 0;
     graphicsDoWeClear();
 }   
 
@@ -148,6 +158,8 @@ void graphicsAddBlockToMap(G_Block block){
         int yPos = (block.pos.y - 1) + block.shape.spaces[i].y, xPos = block.pos.x + block.shape.spaces[i].x;
         map[yPos][xPos] = tile;
     }
+    // Redraw time 
+    redrawTime = 1;
 }
 
 // Check if square below is a block
@@ -199,6 +211,7 @@ void graphicsDoWeClear(){
         }
         // Did we pass?
         if(clear){
+            redrawTime = 1;
             graphicsClearRow(y);
         }
     }
