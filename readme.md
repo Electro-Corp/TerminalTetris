@@ -7,7 +7,7 @@ A - Move left <br>
 D - Move right <br>
 S - Move down <br>
 W - Rotate <br>
-Space - Drop down <br>
+Space/Enter - Drop down <br>
 P - Pause <br>
 
 ## Building

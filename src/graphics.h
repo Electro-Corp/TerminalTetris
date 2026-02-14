@@ -61,11 +61,13 @@ static int terminalWidth, terminalHeight;
 static int gameXOffset, gameYOffset;
 // Variables for when the screen should be fully redrawn
 static int redrawTime = 1; 
-static G_Position refill[4];
+static G_Position refill[8];
 // Game vars
 static int level = 0;
 static int score = 0;
 static int linesCleared = 0;
+// Ghost block
+static G_Block ghostBlock;
 
 // Init graphics zone, based on current terminal size
 void graphicsInit();

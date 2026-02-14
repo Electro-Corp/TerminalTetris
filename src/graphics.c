@@ -136,10 +136,28 @@ void graphicsInitBackdrop(){
 void graphicsDrawFrame(G_Block currentBlock){
     // Clear the last drawn pos
     graphicsHelper_SetColor(backgroundColor.r, backgroundColor.g, backgroundColor.b);
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 8; i++) {
         graphicsHelper_CursorAt(refill[i].x, refill[i].y);
         printf("   ");
     }
+
+    // Draw the ghost block
+    ghostBlock = currentBlock;
+    while(!(blockGetExtremeOnBlock(ghostBlock, 2).y + ghostBlock.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(ghostBlock))){
+        ghostBlock.pos.y++;
+    }
+    ghostBlock.pos.y--; // Go up one step
+    graphicsHelper_SetColor(backgroundColor.r + 50, backgroundColor.g + 50, backgroundColor.b + 50);
+    for(int i = 0; i < 4; i++){
+        int xPos = gameXOffset + (ghostBlock.pos.x * 3) + (ghostBlock.shape.spaces[i].x * 3);
+        int yPos = gameYOffset + ghostBlock.pos.y + ghostBlock.shape.spaces[i].y;
+        graphicsHelper_CursorAt(xPos, yPos);
+        printf("   ");
+        // Save for next frame 
+        refill[i + 4].x = xPos;
+        refill[i + 4].y = yPos;
+    }
+
     if(redrawTime) graphicsInitBackdrop();
         
     // Draw information
@@ -181,7 +199,7 @@ void graphicsDrawPause(){
         }
     }
     graphicsHelper_SetColor(100, 100, 100);
-    graphicsHelper_CursorAt(gameXOffset + 9, gameYOffset + TETRIS_HEIGHT);
+    graphicsHelper_CursorAt(gameXOffset + 9, gameYOffset + (TETRIS_HEIGHT / 2));
     printf("P A U S E D");
 }
 

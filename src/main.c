@@ -171,6 +171,7 @@ void tetrisLoop(){
                     }
                     break;
                 // Push block down 
+                case '\n':
                 case ' ':
                     int blocksFallen = 0;
                     while(!(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block))){
