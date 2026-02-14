@@ -16,7 +16,9 @@
 #include "block.h"
 
 #define TETRIS_WIDTH 10
-#define TETRIS_HEIGHT 20
+#define TETRIS_HEIGHT 40
+
+#define HEIGHT_MULTIPLIER 1
 
 #define PHYS_TETRIS_WIDTH (sizeof(G_Tile) * TETRIS_WIDTH)
 #define PHYS_TETRIS_HEIGHT PHYS_TETRIS_WIDTH * TETRIS_HEIGHT

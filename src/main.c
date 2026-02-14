@@ -15,7 +15,7 @@
 // Variables
 G_Menu mainMenu; // Main menu
 G_Menu pauseMenu; // Pause menu
-int fallTick = 500; // ms for a block to fall 
+int fallTick = 175; // ms for a block to fall 
 int frameTime = 10; // ms to wait after a frame
 struct termios originalTerm; // Original terminal settings
 
@@ -152,7 +152,7 @@ void tetrisLoop(){
                     // Check if we need to push the block away
                     if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)) block.pos.x--;
                     if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)) block.pos.x++;
-                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT * 2) block.pos.y--;
+                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT) block.pos.y--;
                     break;
                 // Right
                 case 'd':

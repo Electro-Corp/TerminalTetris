@@ -14,7 +14,7 @@ void graphicsInit(){
         terminalWidth = winSize.ws_col;
     }
     // Calculate where the game should be
-    gameYOffset = (terminalHeight / 2) - (TETRIS_HEIGHT);
+    gameYOffset = (terminalHeight / 2) - (TETRIS_HEIGHT / 2);
     gameXOffset = (terminalWidth / 2) - ((strlen(TETRIS_BACKGROUND) * TETRIS_WIDTH) / 2);
 
     printf("Terminal Size: %d %d\nGame Pos: %d %d", terminalHeight, terminalWidth, gameXOffset, gameYOffset);
@@ -107,14 +107,15 @@ void graphicsInitBackdrop(){
 
     int mapX = 0, mapY = 0;
 
-    for(int y = gameYOffset; y < gameYOffset + (TETRIS_HEIGHT * 2); y++){
+    for(int y = gameYOffset; y < gameYOffset + (TETRIS_HEIGHT * HEIGHT_MULTIPLIER); y++){
         graphicsHelper_CursorAt(gameXOffset, y);
         for(int x = gameXOffset; x < gameXOffset + TETRIS_WIDTH; x++){
             G_Tile tile = map[mapY][x - gameXOffset];
             graphicsHelper_SetColor(tile.color.r, tile.color.g, tile.color.b);
             printf("   ", tile.empty);
         }
-        if(y % 2 != 0) mapY++;
+        mapY++;
+        //if(y % HEIGHT_MULTIPLIER != 0) mapY++;
     }
 
     // Get next block
@@ -143,18 +144,18 @@ void graphicsDrawFrame(G_Block currentBlock){
         
     // Draw information
     graphicsHelper_SetColor(0, 0, 0);
-    graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 1.5));
+    graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 0.75));
     printf("SCORE: %d", score);
-    graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 1.5) + 2);
+    graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 0.75) + 2);
     printf("LEVEL: %d", level);
-    graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 1.5) + 4);
+    graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 0.75) + 4);
     printf("CLEARED: %d", linesCleared);
     
     // Draw the current block
     graphicsHelper_SetColor(currentBlock.shape.color.r, currentBlock.shape.color.g, currentBlock.shape.color.b);
     for(int i = 0; i < 4; i++){
         int xPos = gameXOffset + (currentBlock.pos.x * 3) + (currentBlock.shape.spaces[i].x * 3);
-        int yPos = gameYOffset + currentBlock.pos.y * 2 + currentBlock.shape.spaces[i].y;
+        int yPos = gameYOffset + currentBlock.pos.y + currentBlock.shape.spaces[i].y;
         if(!(yPos % 2)){
             // Make it thick
             graphicsHelper_CursorAt(xPos, yPos);
@@ -173,7 +174,7 @@ void graphicsDrawFrame(G_Block currentBlock){
 // Draw pause
 void graphicsDrawPause(){
     graphicsHelper_SetColor(150, 150, 150);
-    for(int y = gameYOffset + TETRIS_HEIGHT - 2; y < gameYOffset + (TETRIS_HEIGHT + 2); y++){
+    for(int y = gameYOffset + (TETRIS_HEIGHT / 2) - 2; y < gameYOffset + ((TETRIS_HEIGHT / 2) + 2); y++){
         for(int x = gameXOffset + 5; x < gameXOffset + 25; x++){
             graphicsHelper_CursorAt(x, y);
             printf(" ");
