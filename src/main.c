@@ -47,8 +47,10 @@ int main(int args, char** argv){
     graphicsInit();
 
     // Create main menu
-    mainMenu = createMainMenu();
-    graphicsMenuLoop(&mainMenu);
+    //mainMenu = createMainMenu(); // Dont bother creating main menu.
+    //graphicsMenuLoop(&mainMenu);    // (theres besides "start" and "quit")
+
+    startGame();
 
     return 0;
 }
@@ -102,7 +104,7 @@ void tetrisLoop(){
     // Get a block
     G_Block block = blockGetNextBlock();
     // Loop variables
-    double lastMs = 0.0;
+    double lastMs = 0.0, lastFrameTime = 0.0;
     int updateScreen = 0, paused = 0;
 
     // Draw first frame
@@ -197,8 +199,10 @@ void tetrisLoop(){
             fflush(stdout);
         }
 
-        //usleep(200000);
-        double s = getCurrentTimeMs();
+        // Wait out until frame time 
+        while(getCurrentTimeMs() - lastFrameTime < frameTime);
+
+        lastFrameTime = getCurrentTimeMs();
     }
 }
 
