@@ -18,6 +18,8 @@ G_Menu pauseMenu; // Pause menu
 int fallTick = 175; // ms for a block to fall 
 int frameTime = 10; // ms to wait after a frame
 struct termios originalTerm; // Original terminal settings
+FILE* highScoreFile;
+HSCORE_ENTRY highScores[10];
 
 //
 // Main menu options
@@ -26,9 +28,18 @@ struct termios originalTerm; // Original terminal settings
 void startGame(); // Begin Tetris
 void quit(); // Quit Game
 
+//
+// Game funcs
+//
+
 G_Menu createMainMenu(); // Create main menu
 void tetrisLoop(); // Main loop of tetris
+void gameOver(); // Game... over..
 double getCurrentTimeMs(); // I wonder....
+
+// High-score
+void loadHighScore();
+void dumpHighScores();
 
 // Signals
 void segfault(int);
@@ -38,6 +49,7 @@ void interrupt(int);
 void restoreTermMode();
 
 int main(int args, char** argv){
+    loadHighScore();
     // Capture original terminal settings
     tcgetattr(0, &originalTerm);
     // Setup signals
@@ -48,7 +60,7 @@ int main(int args, char** argv){
 
     // Create main menu
     //mainMenu = createMainMenu(); // Dont bother creating main menu.
-    //graphicsMenuLoop(&mainMenu);    // (theres besides "start" and "quit")
+    //graphicsMenuLoop(&mainMenu);    // (theres nothing besides "start" and "quit", whats the point)
 
     startGame();
 
@@ -70,7 +82,7 @@ G_Menu createMainMenu(){
     
     menu.optionsCount = 2;
 
-    menu.options = (G_Option*)malloc(sizeof(startGameOption) + sizeof(quitGameOption));
+    menu.options = (G_Option*)malloc(sizeof(startGameOption) + sizeof(quitGameOption)); // ugly allocation
     menu.options[0] = startGameOption;
     menu.options[1] = quitGameOption;
 
@@ -111,6 +123,11 @@ void tetrisLoop(){
     graphicsDrawFrame(block);
     // Main Tetris loop
     while(1){
+        // Check if we're at the top
+        if(block.pos.y == 1 && graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 2), 2)){
+            break;
+        }
+
         updateScreen = 0;
         // Check if block should fall
         if(getCurrentTimeMs() - lastMs > fallTick && !paused){
@@ -183,8 +200,7 @@ void tetrisLoop(){
                     }
                     graphicsAddToScore(blocksFallen);
             }
-        }
-        
+        }        
 
         // Check if we should stick
         if(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block)){
@@ -204,12 +220,36 @@ void tetrisLoop(){
 
         lastFrameTime = getCurrentTimeMs();
     }
+
+    gameOver();
+}
+
+void gameOver(){
+    graphicsDrawGameOver(&highScores);
+    // Check if score should be added
+    int addToBoard = -1, pScore = graphicsGetScore();
+    for(int i = 0; i < 10; i++){
+        if(pScore > highScores[i].score){ 
+            addToBoard = i;
+        }
+    }
+    while(getchar() != 'q');
+    if(addToBoard > 0){
+        restoreTermMode();
+        // Get user input
+        char* name = graphicsInputString("New high score! Enter your name:", NAME_MAX_SIZE);
+        strcpy(highScores[addToBoard].name, name);
+        highScores[addToBoard].score = pScore;
+        dumpHighScores();
+    }
+    quit();
 }
 
 // Quit Game
 void quit(){
+    dumpHighScores();
     restoreTermMode();
-    printf("Exiting...\n");
+    printf("Exiting TerminalTetris...\n");
     exit(0);
 }
 
@@ -227,13 +267,34 @@ void segfault(int){
 }
 
 void interrupt(int){
-    restoreTermMode();
-    printf("Exiting TerminalTetris.\n");
-    exit(0);
+    quit();
 }
 
 // Restore terminal mode
 void restoreTermMode(){
     tcsetattr(0, TCSANOW, &originalTerm);
     graphicsHelper_ResetTerm();
+}
+
+// High-score stuff!
+void loadHighScore(){
+    highScoreFile = fopen("hscore", "r");
+    if(!highScoreFile){
+        for(int i = 0; i < 10; i++){
+            HSCORE_ENTRY tmp;
+            strcpy(&tmp.name, "None");
+            tmp.score = 1;
+            highScores[i] = tmp;
+        }
+    }else{
+        // Load from file
+        fread(&highScores, sizeof(HSCORE_ENTRY), 10, highScoreFile);
+    }
+    fclose(highScoreFile);
+}
+
+void dumpHighScores(){
+    highScoreFile = fopen("hscore", "w");
+    fwrite(&highScores, sizeof(HSCORE_ENTRY), 10, highScoreFile);
+    fclose(highScoreFile);
 }

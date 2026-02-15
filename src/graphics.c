@@ -91,6 +91,31 @@ void graphicsFreeMenu(G_Menu* menu){
     free(menu);
 }
 
+// Input a string
+char* graphicsInputString(char* message, int size){
+    // Clear screen
+    graphicsHelper_SetColor(0, 0, 0);
+    printf("\033[2J\033[H");
+    // Print background
+    graphicsHelper_SetColor(100, 100, 100);
+    int xLen = graphicsHelper_GetPositionToCenterText(strlen(message));
+    for(int y = gameYOffset + 5; y < gameYOffset + 7; y++){
+        for(int x = xLen; x < xLen + strlen(message); x++){
+            graphicsHelper_CursorAt(x, y);
+            printf(" ");
+        }
+    }
+    // Print message
+    graphicsHelper_CursorAt(xLen, gameYOffset + 6);
+    printf(message);
+    // Get input
+    graphicsHelper_CursorAt(xLen, gameYOffset + 7);
+    char* input = malloc(sizeof(char) * size);
+    fgets(input, size, stdin);
+    input[strcspn(input, "\n")] = 0; 
+    return input;
+}
+
 //
 // GAME
 //
@@ -191,6 +216,7 @@ void graphicsDrawFrame(G_Block currentBlock){
 
 // Draw pause
 void graphicsDrawPause(){
+    printf("\033[2J\033[H");
     graphicsHelper_SetColor(150, 150, 150);
     for(int y = gameYOffset + (TETRIS_HEIGHT / 2) - 2; y < gameYOffset + ((TETRIS_HEIGHT / 2) + 2); y++){
         for(int x = gameXOffset + 5; x < gameXOffset + 25; x++){
@@ -201,6 +227,30 @@ void graphicsDrawPause(){
     graphicsHelper_SetColor(100, 100, 100);
     graphicsHelper_CursorAt(gameXOffset + 9, gameYOffset + (TETRIS_HEIGHT / 2));
     printf("P A U S E D");
+    fflush(stdout);
+}
+
+// Draw game over
+void graphicsDrawGameOver(HSCORE_ENTRY* scores){
+    graphicsHelper_SetColor(205, 32, 32);
+    for(int y = gameYOffset + 5; y < gameYOffset + ((TETRIS_HEIGHT * 0.75) + 2); y++){
+        for(int x = gameXOffset + 5; x < gameXOffset + 25; x++){
+            graphicsHelper_CursorAt(x, y);
+            printf(" ");
+        }
+    }
+    graphicsHelper_SetColor(255, 100, 100);
+    graphicsHelper_CursorAt(gameXOffset + 6, gameYOffset + 6);
+    printf("GAME OVER!");
+    // Print High scores
+    for(int i = 10; i > 0; i--){
+        graphicsHelper_SetColor(205, 32, 32);
+        graphicsHelper_CursorAt(gameXOffset + 6, gameYOffset + 8 + ((10 - i) * 2));
+        printf("%s -> %d", (*(scores + i)).name, (*(scores + i)).score);
+    }
+    graphicsHelper_CursorAt(gameXOffset + 6, gameYOffset + 29);
+    printf("\'q\' to continue!");
+    fflush(stdout);
 }
 
 // Add block to map
@@ -318,6 +368,10 @@ void graphicsClearRow(int row){
 // Add to score
 void graphicsAddToScore(int n){
     score += n;
+}
+
+int graphicsGetScore(){
+    return score;
 }
 
 

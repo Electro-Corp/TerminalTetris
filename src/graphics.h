@@ -28,6 +28,8 @@
 
 #define TETRIS_BACKGROUND "   "
 
+#define NAME_MAX_SIZE 8
+
 // Two types of display modes, Menu and Game
 
 // Menu option
@@ -48,6 +50,12 @@ typedef struct {
     G_Color color;
     int empty;
 } G_Tile;
+
+// High score entry
+typedef struct {
+    char name[NAME_MAX_SIZE];
+    int score;
+} HSCORE_ENTRY;
 
 // Map
 static G_Tile map[TETRIS_HEIGHT][TETRIS_WIDTH];
@@ -82,6 +90,9 @@ void graphicsMenuLoop(G_Menu* menu);
 // Free a menu
 void graphicsFreeMenu(G_Menu* menu);
 
+// Input a string
+char* graphicsInputString(char* message, int size);
+
 //
 // GAME
 //
@@ -94,6 +105,9 @@ void graphicsDrawFrame(G_Block currentBlock);
 
 // Draw pause
 void graphicsDrawPause();
+
+// Draw game over
+void graphicsDrawGameOver(HSCORE_ENTRY* scores);
 
 // Add block to map
 void graphicsAddBlockToMap(G_Block block);
@@ -112,6 +126,9 @@ void graphicsClearRow(int row);
 
 // Add to score
 void graphicsAddToScore(int n);
+
+// Get current score
+int graphicsGetScore();
 
 //
 // Helpers
