@@ -289,8 +289,8 @@ void loadHighScore(){
     }else{
         // Load from file
         fread(&highScores, sizeof(HSCORE_ENTRY), 10, highScoreFile);
+        fclose(highScoreFile);
     }
-    fclose(highScoreFile);
 }
 
 void dumpHighScores(){
