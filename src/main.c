@@ -15,8 +15,9 @@
 // Variables
 G_Menu mainMenu; // Main menu
 G_Menu pauseMenu; // Pause menu
-int fallTick = 175; // ms for a block to fall 
+int fallTick = 100; // ms for a block to fall 
 int frameTime = 10; // ms to wait after a frame
+int holdAtBottom = 500;
 struct termios originalTerm; // Original terminal settings
 FILE* highScoreFile;
 HSCORE_ENTRY highScores[10];
@@ -116,13 +117,16 @@ void tetrisLoop(){
     // Get a block
     G_Block block = blockGetNextBlock();
     // Loop variables
-    double lastMs = 0.0, lastFrameTime = 0.0;
-    int updateScreen = 0, paused = 0;
+    double lastMs = 0.0, lastFrameTime = 0.0, holdBottomTime = 0.0;
+    int updateScreen = 0, paused = 0, holding = 0;
 
     // Draw first frame
     graphicsDrawFrame(block);
     // Main Tetris loop
     while(1){
+        // Update fall time
+        fallTick = fallTick - (fallTick * (0.1 * level));
+        holdAtBottom = fallTick * 5;
         // Check if we're at the top
         if(block.pos.y == 1 && graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 2), 2)){
             break;
@@ -130,7 +134,7 @@ void tetrisLoop(){
 
         updateScreen = 0;
         // Check if block should fall
-        if(getCurrentTimeMs() - lastMs > fallTick && !paused){
+        if(getCurrentTimeMs() - lastMs > fallTick && !paused && !holding){
             block.pos.y++;
             lastMs = getCurrentTimeMs();
             updateScreen = 1; // Yes, update screen
@@ -169,9 +173,11 @@ void tetrisLoop(){
                     updateScreen = 1;
                     block = blockRotateBlock(block, 1);
                     // Check if we need to push the block away
-                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)) block.pos.x--;
+                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)){
+                        block.pos.x--;
+                    }
                     if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)) block.pos.x++;
-                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 > TETRIS_HEIGHT) block.pos.y--;
+                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) - 1 > TETRIS_HEIGHT) block.pos.y--;
                     break;
                 // Right
                 case 'd':
@@ -204,11 +210,16 @@ void tetrisLoop(){
 
         // Check if we should stick
         if(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block)){
-            graphicsAddBlockToMap(block);
-            block = blockGetNextBlock();
-            updateScreen = 1;
+            if(holding && getCurrentTimeMs() - holdBottomTime > holdAtBottom){
+                graphicsAddBlockToMap(block);
+                block = blockGetNextBlock();
+                holding = 0;
+                updateScreen = 1;
+            }else if(!holding){
+                holdBottomTime = getCurrentTimeMs();
+                holding = 1;
+            }
         }
-
         // Do we need to update the screen?
         if(updateScreen == 1){
             graphicsDrawFrame(block);
