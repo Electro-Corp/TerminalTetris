@@ -189,10 +189,6 @@ void tetrisLoop(){
                 case 'w':
                     updateScreen = 1;
                     G_Block tmp = blockRotateBlock(block, 1);
-                    // Nah
-                    if(graphicsIsHittingOtherBlock(block)){
-                        tmp = block;
-                    }
                     // Check if we need to push the block away
                     if((blockGetExtremeOnBlock(tmp, 1).x + tmp.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(tmp.pos, blockGetExtremeOnBlock(tmp, 1), 1)){
                         tmp.pos.x--;
@@ -202,6 +198,12 @@ void tetrisLoop(){
                     }
                     if((blockGetExtremeOnBlock(tmp, 2).y + tmp.pos.y) - 1 > TETRIS_HEIGHT){
                         tmp.pos.y--;
+                    }
+
+                    // Are we still hitting something?
+                    if(graphicsIsHittingOtherBlock(block)){
+                        // Okay give up
+                        tmp = block;
                     }
 
                     block = tmp;
