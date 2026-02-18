@@ -158,7 +158,7 @@ void graphicsInitBackdrop(){
 }
 
 // Draw frame
-void graphicsDrawFrame(G_Block currentBlock){
+void graphicsDrawFrame(G_Block currentBlock, int holding, double time){
     // Clear the last drawn pos
     graphicsHelper_SetColor(backgroundColor.r, backgroundColor.g, backgroundColor.b);
     for(int i = 0; i < 8; i++) {
@@ -193,12 +193,23 @@ void graphicsDrawFrame(G_Block currentBlock){
     printf("LEVEL: %d", level);
     graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 0.75) + 4);
     printf("CLEARED: %d", linesCleared);
+    // Debug Block Position
+    //graphicsHelper_CursorAt(gameXOffset + (TETRIS_WIDTH * 3) + 2, gameYOffset + (TETRIS_HEIGHT * 0.75) + 6);
+    //printf("BLOCK POSITION: %d %d (%f)", currentBlock.pos.x, currentBlock.pos.y, time);
     
+    //
     // Draw the current block
-    graphicsHelper_SetColor(currentBlock.shape.color.r, currentBlock.shape.color.g, currentBlock.shape.color.b);
+    //
+
+    // Make it blink if we're holding at the bottom
+    if(holding){
+        graphicsHelper_SetColor(currentBlock.shape.color.r * time, currentBlock.shape.color.g * time, currentBlock.shape.color.b * time);
+    }else{
+        graphicsHelper_SetColor(currentBlock.shape.color.r, currentBlock.shape.color.g, currentBlock.shape.color.b);
+    }
     for(int i = 0; i < 4; i++){
         int xPos = gameXOffset + (currentBlock.pos.x * 3) + (currentBlock.shape.spaces[i].x * 3);
-        int yPos = gameYOffset + currentBlock.pos.y + currentBlock.shape.spaces[i].y;
+        int yPos = gameYOffset + currentBlock.pos.y + currentBlock.shape.spaces[i].y - 1;
         if(!(yPos % 2)){
             // Make it thick
             graphicsHelper_CursorAt(xPos, yPos);

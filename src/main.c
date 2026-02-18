@@ -121,7 +121,7 @@ void tetrisLoop(){
     int updateScreen = 0, paused = 0, holding = 0;
 
     // Draw first frame
-    graphicsDrawFrame(block);
+    graphicsDrawFrame(block, holding, getCurrentTimeMs() - holdBottomTime / holdAtBottom);
     // Main Tetris loop
     while(1){
         // Update fall time
@@ -132,7 +132,24 @@ void tetrisLoop(){
             break;
         }
 
+        // Don't update unless we need to
         updateScreen = 0;
+
+        // Check if we should stick
+        if(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block)){
+            if(holding && getCurrentTimeMs() - holdBottomTime > holdAtBottom){
+                graphicsAddBlockToMap(block);
+                block = blockGetNextBlock();
+                holding = 0;
+            }else if(!holding){
+                holdBottomTime = getCurrentTimeMs();
+                holding = 1;
+            }
+            updateScreen = 1;
+        }else{
+            holding = 0;
+        }
+
         // Check if block should fall
         if(getCurrentTimeMs() - lastMs > fallTick && !paused && !holding){
             block.pos.y++;
@@ -171,13 +188,23 @@ void tetrisLoop(){
                 // Up
                 case 'w':
                     updateScreen = 1;
-                    block = blockRotateBlock(block, 1);
-                    // Check if we need to push the block away
-                    if((blockGetExtremeOnBlock(block, 1).x + block.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 1), 1)){
-                        block.pos.x--;
+                    G_Block tmp = blockRotateBlock(block, 1);
+                    // Nah
+                    if(graphicsIsHittingOtherBlock(block)){
+                        tmp = block;
                     }
-                    if((blockGetExtremeOnBlock(block, 0).x + block.pos.x) < 0 && !graphicsSquareHittingBook(block.pos, blockGetExtremeOnBlock(block, 0), 0)) block.pos.x++;
-                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) - 1 > TETRIS_HEIGHT) block.pos.y--;
+                    // Check if we need to push the block away
+                    if((blockGetExtremeOnBlock(tmp, 1).x + tmp.pos.x) + 1 > TETRIS_WIDTH && !graphicsSquareHittingBook(tmp.pos, blockGetExtremeOnBlock(tmp, 1), 1)){
+                        tmp.pos.x--;
+                    }
+                    if((blockGetExtremeOnBlock(tmp, 0).x + tmp.pos.x) < 0 && !graphicsSquareHittingBook(tmp.pos, blockGetExtremeOnBlock(tmp, 0), 0)){
+                        tmp.pos.x++;
+                    }
+                    if((blockGetExtremeOnBlock(tmp, 2).y + tmp.pos.y) - 1 > TETRIS_HEIGHT){
+                        tmp.pos.y--;
+                    }
+
+                    block = tmp;
                     break;
                 // Right
                 case 'd':
@@ -190,7 +217,7 @@ void tetrisLoop(){
                 // Down
                 case 's':
                     // Check if at bottom
-                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT){
+                    if((blockGetExtremeOnBlock(block, 2).y + block.pos.y) + 1 < TETRIS_HEIGHT && !graphicsIsHittingOtherBlock(block)){
                         updateScreen = 1;
                         block.pos.y++;
                     }
@@ -199,7 +226,7 @@ void tetrisLoop(){
                 case '\n':
                 case ' ':
                     int blocksFallen = 0;
-                    while(!(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block))){
+                    while(!(blockGetExtremeOnBlock(block, 2).y + block.pos.y + 1 == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block))){
                         block.pos.y++;
                         blocksFallen++;
                         updateScreen = 1;
@@ -208,21 +235,10 @@ void tetrisLoop(){
             }
         }        
 
-        // Check if we should stick
-        if(blockGetExtremeOnBlock(block, 2).y + block.pos.y == TETRIS_HEIGHT || graphicsIsHittingOtherBlock(block)){
-            if(holding && getCurrentTimeMs() - holdBottomTime > holdAtBottom){
-                graphicsAddBlockToMap(block);
-                block = blockGetNextBlock();
-                holding = 0;
-                updateScreen = 1;
-            }else if(!holding){
-                holdBottomTime = getCurrentTimeMs();
-                holding = 1;
-            }
-        }
+    
         // Do we need to update the screen?
         if(updateScreen == 1){
-            graphicsDrawFrame(block);
+            graphicsDrawFrame(block, holding, (getCurrentTimeMs() - holdBottomTime) / holdAtBottom);
             fflush(stdout);
         }
 

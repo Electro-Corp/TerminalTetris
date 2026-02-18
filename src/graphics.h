@@ -101,7 +101,7 @@ char* graphicsInputString(char* message, int size);
 void graphicsInitBackdrop();
 
 // Draw frame
-void graphicsDrawFrame(G_Block currentBlock);
+void graphicsDrawFrame(G_Block currentBlock, int holding, double time);
 
 // Draw pause
 void graphicsDrawPause();
